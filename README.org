@@ -19,14 +19,14 @@ flexible treatment with smart playlists.
 The idea is to generate Bash shell code that updates the smart
 playlists from a problem definition. The first thing we need is such a
 problem definition, in XML of course. This is in the file
-[[file://smartplaylists.xml]]:
+[[file:smartplaylists.xml]]:
 
 #+include: smartplaylists.xml src xml
 
 As you can see the XML is not as simple as you might expect. This is
 because I developed the XML problem definition and the XSLT in tandem,
 such that one suits the other. Let's see how the XSLT (file
-[[file://genupdate-sh.xsl]]) looks:
+[[file:genupdate-sh.xsl]]) looks:
 
 #+include: genupdate-sh.xsl src xslt
 

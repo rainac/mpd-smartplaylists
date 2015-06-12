@@ -1,0 +1,20 @@
+<smart-playlists version="1.0">
+  <playlist name="el-rookie">
+    <or>
+      <and>
+        <query type="artist">rookie</query>
+      </and>
+      <and>
+        <query type="artist">roockie</query>
+      </and>
+    </or>
+  </playlist>
+  <playlist name="wisin-y-yandel">
+    <or>
+      <and>
+        <query type="artist">wisin</query>
+        <query type="artist">yandel</query>
+      </and>
+    </or>
+  </playlist>
+</smart-playlists>

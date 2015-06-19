@@ -1,0 +1,2 @@
+hector-el-father: artist="el father" & artist=hector
+el-rookie: rookie | roockie

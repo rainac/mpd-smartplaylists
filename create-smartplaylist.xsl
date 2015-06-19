@@ -12,14 +12,25 @@
 
   <xsl:template match="cx:root">
     <smart-playlists version="1.0">
-      <xsl:apply-templates/>
+      <xsl:apply-templates mode="in-root"/>
     </smart-playlists>
   </xsl:template>
 
-  <xsl:template match="cx:colon">
+  <xsl:template match="cx:colon" mode="in-root">
     <playlist name="{cx:*[1]}">
       <xsl:apply-templates select="cx:*[2]" mode="in-playlist"/>
     </playlist>
+  </xsl:template>
+  <xsl:template match="cx:or" mode="in-root">
+    <xsl:apply-templates select="." mode="in-playlist"/>
+  </xsl:template>
+  <xsl:template match="cx:and" mode="in-root">
+    <xsl:apply-templates select="."/>
+  </xsl:template>
+  <xsl:template match="cx:eq" mode="in-root">
+    <and>
+      <xsl:apply-templates select="."/>
+    </and>
   </xsl:template>
 
   <xsl:template match="cx:or" mode="in-playlist">
@@ -64,6 +75,9 @@
     <query type="artist">
       <xsl:apply-templates select="."/>
     </query>
+  </xsl:template>
+  <xsl:template match="cx:and" mode="in-and">
+    <xsl:apply-templates mode="in-and"/>
   </xsl:template>
   <xsl:template match="cx:eq" mode="in-and">
     <xsl:apply-templates select="."/>

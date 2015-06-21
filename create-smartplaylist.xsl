@@ -32,6 +32,15 @@
       <xsl:apply-templates select="."/>
     </and>
   </xsl:template>
+  <xsl:template match="cx:null" mode="in-root"/>
+  <xsl:template match="cx:nl" mode="in-root">
+    <xsl:apply-templates mode="in-root"/>
+  </xsl:template>
+  <xsl:template match="cx:*" mode="in-root">
+    <and>
+      <xsl:apply-templates select="." mode="in-and"/>
+    </and>
+  </xsl:template>
 
   <xsl:template match="cx:or" mode="in-playlist">
     <xsl:apply-templates select="."/>

@@ -142,3 +142,54 @@ play around with it and see what happens if you change something.
 Happy code generating!
 
 
+
+* A custom text based language (representation) for Smartplaylists
+
+* Command line interface for the Smartplaylists
+
+The basic command line program is smartplaylists.sh:
+
+#+BEGIN_SRC sh
+smartplaylists.sh -h
+#+END_SRC
+
+will show a summary of options.
+
+The main option is _-m_, which determines the mode of operation. For
+example _-m spsh_ will generate shell code calling mpc with the given
+query and _-m spfl_ (the default) will execute the query and thus
+return the list of search results.
+
+smartplaylists.sh will take as query input the remaining command line
+arguments, for example: 
+#+BEGIN_SRC sh
+smartplaylists.sh -m spsh hector and tito
+#+END_SRC
+
+When there are no arguments (other than options), then
+smartplaylists.sh will read from stdin. So the same example as before
+can also be stated as
+#+BEGIN_SRC sh
+echo "hector and tito" | smartplaylists.sh -m spsh
+#+END_SRC
+
+smartplaylist.sh shall in the future recognize different input
+formats, in particular, queries may then be given as either text or
+XML.
+
+The main modes of operations are currently the following:
+
+  - spxml :: convert text based query to XML
+  - spfl :: execure query and print results (the default)
+  - scp-device :: copy the query results from the MPD host to another
+                  device, using /scp/
+
+For example, when you have an Android device with an SSH app such as
+/SSHelper/, the device is in you local network as host "mobile", then
+you could transfer the result of the query "album eq dubn" to the
+device with this command
+
+#+BEGIN_SRC sh
+./smartplaylist.sh -m scp-device -d "mobile:/mnt/sdcard2/Music/incoming" album eq dub
+#+END_SRC
+

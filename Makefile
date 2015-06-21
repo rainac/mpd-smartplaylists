@@ -17,7 +17,7 @@
 #  - transfer playlist to device
 #  - transfer file list to device
 
-device=handy
+device ?= "handy:"  # scp host
 
 %.spxml: %.sp
 	cat $< | smartplaylist-txt2xml.sh > $@
@@ -28,15 +28,15 @@ device=handy
 %.spfl: %.spsh
 	cat $< | bash > $@
 
-%.scp-$(device): %.spfl
-	cat $< | copy-mpd-to-device.sh -d $(device) | bash
+%.scp-device: %.spfl
+	cat $< | DST=$(device) copy-mpd-to-host.sh  | bash
 # do not produce the target so this can be run repeatedly as a command mode
 
 %.scp-handy: %.spfl
 	cat $< | copy-mpd-to-handy.sh | bash
 # do not produce the target so this can be run repeatedly as a command mode
 
-%.rsync-$(device): %.spfl
+%.rsync-device: %.spfl
 	cat $< | copy-mpd-to-device.sh -d $(device)
 # do not produce the target so this can be run repeatedly as a command mode
 

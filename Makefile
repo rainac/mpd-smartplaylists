@@ -17,6 +17,8 @@
 #  - transfer playlist to device
 #  - transfer file list to device
 
+debug_flag ?=
+
 device ?= "mobile:"  # scp host
 
 %.spxml: %.sp
@@ -28,22 +30,18 @@ device ?= "mobile:"  # scp host
 %.spfl: %.spsh
 	cat $< | bash > $@
 
-%.scp-device: %.spfl
-	cat $< | DST=$(device) copy-mpd-to-host.sh  | bash
+%.scp %.scp-device: %.spfl
+	cat $< | DST=$(device) copy-mpd-to-host.sh $(debug_flag) | bash
 # do not produce the target so this can be run repeatedly as a command mode
 
-%.scp-handy: %.spfl
-	cat $< | copy-mpd-to-handy.sh | bash
+%.tar %.tar-device: %.spfl
+	cat $< | copy-tarred-mpd-to-host.sh -d $(device) -z $(debug_flag)
 # do not produce the target so this can be run repeatedly as a command mode
 
-%.rsync-device: %.spfl
-	cat $< | copy-mpd-to-device.sh -d $(device)
+%.rsync %.rsync-pull %.rsync-device: %.spfl
+	cat $< | copy-rsync-from-mpd.sh -d $(device) $(debug_flag)
 # do not produce the target so this can be run repeatedly as a command mode
 
-%.rsync-handy: %.spfl
-	cat $< | copy-mpd-to-handy.sh
-# do not produce the target so this can be run repeatedly as a command mode
-
-%.tar-device: %.spfl
-	cat $< | DST=$(device) copy-tarred-mpd-to-host.sh -j
+#%.rsync-push %.rsync-device: %.spfl
+#	cat $< | copy-rsync-mpd-to-host.sh -d $(device) $(debug_flag)
 # do not produce the target so this can be run repeatedly as a command mode

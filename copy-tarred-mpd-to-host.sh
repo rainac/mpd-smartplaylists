@@ -76,5 +76,7 @@ scp -q dev-script.sh $DST_HOST:
 
 ssh $MPD_HOST "sh host-script.sh" | ssh $DST_HOST "sh dev-script.sh"
 
-ssh $MPD_HOST "rm -f host-script.sh tmp.list"
-ssh $DST_HOST "rm -f dev-script.sh"
+if [[ -z "$debug" ]]; then
+    ssh $MPD_HOST "rm -f host-script.sh tmp.list"
+    ssh $DST_HOST "rm -f dev-script.sh"
+fi

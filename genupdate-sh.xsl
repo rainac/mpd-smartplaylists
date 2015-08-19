@@ -39,5 +39,10 @@
     <xsl:text> </xsl:text>
     <xsl:value-of select="."/>
   </xsl:template>
+
+  <xsl:template match="paren">
+    <xsl:message>warning: paren encountered</xsl:message>
+  </xsl:template>
+
 </xsl:stylesheet>
 

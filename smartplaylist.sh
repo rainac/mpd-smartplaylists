@@ -122,7 +122,16 @@ shift $(($OPTIND - 1))
 if [[ -z "$1" ]]; then
     cat - > $tmpdir/tmp.data
 else
-    echo "$@" > $tmpdir/tmp.data
+    echo -n "" > $tmpdir/tmp.data
+    while [[ -n "$1" ]]; do
+        if (echo "$1" | grep ' ' && !( echo "$1" | grep '"' ||  echo "$1" | grep "'")) > /dev/null; then
+            echo -n "'$1' " >> $tmpdir/tmp.data
+        else
+            echo -n "$1 " >> $tmpdir/tmp.data
+        fi
+        shift
+    done
+    echo "" >> $tmpdir/tmp.data
 fi
 
 intype=$(./sniff-input-type.sh $tmpdir/tmp.data)

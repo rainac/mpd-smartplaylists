@@ -51,4 +51,19 @@ test_and_nested_or_query() {
     assertEquals "0" "$?"
 }
 
+test_and_nested_or_query2() {
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and '(' album=god or album=rise ')' and '(' title=miss or title=child ')' | tee tmp.sh)
+    echo "mpc search  artist bad album god title miss
+    mpc search  artist bad album rise title miss" | diff -B -w - tmp.sh
+    assertEquals "0" "$?"
+}
+
+test_and_nested_or_query3() {
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and '(' album=god or artist=good and '(' album=devil or album=rise ')' ')' | tee tmp.sh)
+    echo "mpc search  artist bad album god
+    mpc search  artist bad album rise" | diff -B -w - tmp.sh
+    assertEquals "0" "$?"
+
+}
+
 . shunit2

@@ -91,7 +91,7 @@
   <xsl:template match="cx:and" mode="in-and">
     <xsl:apply-templates mode="in-and"/>
   </xsl:template>
-  <xsl:template match="cx:equal" mode="in-and">
+  <xsl:template match="cx:equal|cx:l_paren" mode="in-and">
     <xsl:apply-templates select="."/>
   </xsl:template>
   
@@ -104,8 +104,10 @@
     </query>
   </xsl:template>
 
-  <xsl:template match="cx:paren">
-    <xsl:apply-templates mode="in-root"/>
+  <xsl:template match="cx:l_paren">
+    <paren>
+      <xsl:apply-templates mode="in-root"/>
+    </paren>
   </xsl:template>
 
   <xsl:template match="cx:*">

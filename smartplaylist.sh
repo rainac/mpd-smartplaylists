@@ -22,7 +22,7 @@ sourceDir=$(dirname $(readlink -f $BASH_SOURCE))
 
 DST=handy:/mnt/sdcard2/music
 
-optstring=":hvDd:m:"
+optstring=":hvDd:m:T:"
 option=""
 
 make_silent_flag=-s

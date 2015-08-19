@@ -22,7 +22,7 @@
     </playlist>
   </xsl:template>
   <xsl:template match="cx:or" mode="in-root">
-    <xsl:apply-templates select="." mode="in-playlist"/>
+    <xsl:apply-templates select="."/>
   </xsl:template>
   <xsl:template match="cx:and" mode="in-root">
     <xsl:apply-templates select="."/>

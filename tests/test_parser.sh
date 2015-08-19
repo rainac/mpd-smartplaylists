@@ -34,6 +34,20 @@ test_string_query() {
     assertEquals "0" "$?"
 }
 
+test_and3() {
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and album=god and title=child | tee tmp.sh)
+    echo "mpc search  artist bad album god title child" | diff -B -w - tmp.sh
+    assertEquals "0" "$?"
+}
+
+test_or3() {
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad or album=god or title=child | tee tmp.sh)
+    echo "mpc search  artist bad
+    mpc search  album god
+    mpc search  title child" | diff -B -w - tmp.sh
+    assertEquals "0" "$?"
+}
+
 test_and_nested_or_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and '(' album=god or album=rise ')' | tee tmp.sh)
     echo "mpc search  artist bad album god

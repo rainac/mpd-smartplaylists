@@ -27,6 +27,10 @@
     </or>
   </xsl:template>
 
+  <xsl:template match="and/paren[and]" mode="in-and">
+    <xsl:apply-templates/>
+  </xsl:template>
+
   <xsl:template match="and" mode="in-and">
     <xsl:apply-templates/>
   </xsl:template>

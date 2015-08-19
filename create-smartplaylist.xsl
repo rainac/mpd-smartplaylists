@@ -27,8 +27,8 @@
   <xsl:template match="cx:and" mode="in-root">
     <xsl:apply-templates select="."/>
   </xsl:template>
-  <xsl:template match="cx:eq" mode="in-root">
-    <and>
+  <xsl:template match="cx:equal" mode="in-root">
+    <and mode="auto-root">
       <xsl:apply-templates select="."/>
     </and>
   </xsl:template>
@@ -36,8 +36,11 @@
   <xsl:template match="cx:nl" mode="in-root">
     <xsl:apply-templates mode="in-root"/>
   </xsl:template>
+  <xsl:template match="cx:newline" mode="in-root">
+    <xsl:apply-templates mode="in-root"/>
+  </xsl:template>
   <xsl:template match="cx:*" mode="in-root">
-    <and>
+    <and mode="auto-root">
       <xsl:apply-templates select="." mode="in-and"/>
     </and>
   </xsl:template>
@@ -88,15 +91,28 @@
   <xsl:template match="cx:and" mode="in-and">
     <xsl:apply-templates mode="in-and"/>
   </xsl:template>
-  <xsl:template match="cx:eq" mode="in-and">
+  <xsl:template match="cx:equal" mode="in-and">
     <xsl:apply-templates select="."/>
   </xsl:template>
   
-  <xsl:template match="cx:eq">
-    <query type="{cx:*[1]}">
+  <xsl:template match="cx:equal">
+    <query>
+      <xsl:attribute name="type">
+        <xsl:apply-templates select="cx:*[1]"/>
+      </xsl:attribute>
       <xsl:apply-templates select="cx:*[2]"/>
     </query>
   </xsl:template>
+
+  <xsl:template match="cx:paren">
+    <xsl:apply-templates mode="in-root"/>
+  </xsl:template>
+
+  <xsl:template match="cx:*">
+    <xsl:apply-templates select="cx:*|ca:t"/>
+  </xsl:template>
+
+  <xsl:template match="ca:ignore"/>
 
 </xsl:stylesheet>
 

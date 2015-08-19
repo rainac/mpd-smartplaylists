@@ -2,8 +2,7 @@
 
 res=0
 cat - > in.xml;
-set -x
-while ! xsltproc $SMPL_HOME/smartplaylist-has-paren.xsl in.xml > /dev/null; do
+while ! xsltproc $SMPL_HOME/smartplaylist-has-paren.xsl in.xml >& /dev/null; do
     xsltproc -o in-tmp.xml $SMPL_HOME/smartplaylist-distrib-or.xsl in.xml
     cp in-tmp.xml in.xml
 done

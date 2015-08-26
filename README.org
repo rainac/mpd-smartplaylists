@@ -1,6 +1,126 @@
 #+TITLE: Smart playlists for the Music Player Demon (MPD)
 
-* Generating smart playlists for MPD with XSLT
+* Installation
+
+* A custom text based language (representation) for Smartplaylists
+
+The idea is to create a small custom language to express queries to a
+Music Player Demon (MPD). We want to allow searching the categories
+provided with arbitrary search strings, and allow to combine these
+with *and* and *or*. In addition we would like to support parentheses
+and a kind of assignment operator we call *is*.
+
+** Simple Queries
+
+A simple query has a /category/, or /tag type/, and a search string.
+These are separated by an equal operator, *eq* or *=*. The available
+categories are those accepted by the ~mpc~ commands ~search~, ~find~,
+~findadd~, etc. (see manpage mpc(1)).
+
+For example, ~artist=rolling~ search the category ~artist~ for the
+string ~rolling~. Using the mpc client, such a query using the command
+~search~ would look like this:
+#+BEGIN_SRC sh
+mpc search artist rolling
+#+END_SRC
+Using the smartplaylist client it looks like this
+#+BEGIN_SRC sh
+./smartplaylist.sh artist=rolling
+#+END_SRC
+Spaces in between the category, operator and search string are
+allowed:
+#+BEGIN_SRC sh
+./smartplaylist.sh artist =rolling
+#+END_SRC
+Spaces in the search string must be quoted:
+#+BEGIN_SRC sh
+./smartplaylist.sh artist = 'rolling stones'
+#+END_SRC
+The expression can also be read from the standard input:
+allowed:
+#+BEGIN_SRC sh
+echo "artist = rolling" | ./smartplaylist.sh
+#+END_SRC
+
+*** Default category
+
+The default category is ~artist~. It is used when just a plain string
+is given. In the example, we could rewrite the query to read just
+~rolling~.
+Using the smartplaylist client it looks like this
+#+BEGIN_SRC sh
+./smartplaylist.sh rolling
+#+END_SRC
+
+** And and Or queries
+
+Queries may be combined using either the
+#+BEGIN_SRC sh
+./smartplaylist.sh rolling
+#+END_SRC
+
+** Nested Queries using parentheses
+
+** Assigning a playlist name to a playlist
+
+This is done using the colon ~:~ operator, which has the alias
+"is". For example:
+
+#+BEGIN_SRC sh
+
+#+END_SRC
+
+* Command line interface for the Smartplaylists
+
+The basic command line program is smartplaylists.sh:
+
+#+BEGIN_SRC sh
+smartplaylists.sh -h
+#+END_SRC
+
+will show a summary of options.
+
+The main option is _-m_, which determines the mode of operation. For
+example _-m spsh_ will generate shell code calling mpc with the given
+query and _-m spfl_ (the default) will execute the query and thus
+return the list of search results.
+
+smartplaylists.sh will take as query input the remaining command line
+arguments, for example:
+#+BEGIN_SRC sh
+smartplaylists.sh -m spsh hector and tito
+#+END_SRC
+
+When there are no arguments (other than options), then
+smartplaylists.sh will read from stdin. So the same example as before
+can also be stated as
+#+BEGIN_SRC sh
+echo "hector and tito" | smartplaylists.sh -m spsh
+#+END_SRC
+
+smartplaylist.sh shall in the future recognize different input
+formats, in particular, queries may then be given as either text or
+XML.
+
+The main modes of operations are currently the following:
+
+  - spxml :: convert text based query to XML
+  - spfl :: execure query and print results (the default)
+  - scp-device :: copy the query results from the MPD host to another
+                  device, using /scp/
+
+For example, when you have an Android device with an SSH app such as
+/SSHelper/, the device is in you local network as host "mobile", then
+you could transfer the result of the query "album eq dubn" to the
+device with this command
+
+#+BEGIN_SRC sh
+./smartplaylist.sh -m scp-device -d "mobile:/mnt/sdcard2/Music/incoming" album eq dub
+#+END_SRC
+
+
+
+* How does it work: Generating smart playlists for MPD with XSLT
 
 Code generation with XSLT is after all the years a hot topic for me. I
 think it is a great technique to generate code for many means. Let's
@@ -68,7 +188,7 @@ type as its attribute *@type* and the query as its text content.
 Now we want to see the XSLT in action: We run *xsltproc* with it on
 the smart playlist definition XML:
 
-#+BEGIN_SRC sh :exports both :results output 
+#+BEGIN_SRC sh :exports both :results output
 xsltproc genupdate-sh.xsl smartplaylists.xml
 #+END_SRC
 
@@ -77,26 +197,26 @@ xsltproc genupdate-sh.xsl smartplaylists.xml
 
     mpc rm tmp-update-pls
     mpc save tmp-update-pls
-    
+
     mpc clear
-    
+
     mpc search  artist rookie | mpc add
-  
+
     mpc search  artist roockie | mpc add
-  
+
     mpc rm el-rookie
     mpc save el-rookie
 
     mpc clear
-    
+
     mpc search  artist wisin artist yandel | mpc add
-  
+
     mpc rm wisin-y-yandel
     mpc save wisin-y-yandel
 
     mpc clear
     mpc load tmp-update-pls
-    
+
 #+end_example
 
 The result is valid Bash code, so we can just pipe it to the shell:
@@ -111,7 +231,7 @@ Then load one of the freshly generated and up-to-date playlists:
 mpc load wisin-y-yandel
 #+END_SRC
 
-A few things to note: 
+A few things to note:
 
   - Running this playlist update command will save and restore your
     current playlist, but it will stop playback
@@ -140,56 +260,3 @@ The last two points deserve more words, but for now, I'd say, just
 play around with it and see what happens if you change something.
 
 Happy code generating!
-
-
-
-* A custom text based language (representation) for Smartplaylists
-
-* Command line interface for the Smartplaylists
-
-The basic command line program is smartplaylists.sh:
-
-#+BEGIN_SRC sh
-smartplaylists.sh -h
-#+END_SRC
-
-will show a summary of options.
-
-The main option is _-m_, which determines the mode of operation. For
-example _-m spsh_ will generate shell code calling mpc with the given
-query and _-m spfl_ (the default) will execute the query and thus
-return the list of search results.
-
-smartplaylists.sh will take as query input the remaining command line
-arguments, for example: 
-#+BEGIN_SRC sh
-smartplaylists.sh -m spsh hector and tito
-#+END_SRC
-
-When there are no arguments (other than options), then
-smartplaylists.sh will read from stdin. So the same example as before
-can also be stated as
-#+BEGIN_SRC sh
-echo "hector and tito" | smartplaylists.sh -m spsh
-#+END_SRC
-
-smartplaylist.sh shall in the future recognize different input
-formats, in particular, queries may then be given as either text or
-XML.
-
-The main modes of operations are currently the following:
-
-  - spxml :: convert text based query to XML
-  - spfl :: execure query and print results (the default)
-  - scp-device :: copy the query results from the MPD host to another
-                  device, using /scp/
-
-For example, when you have an Android device with an SSH app such as
-/SSHelper/, the device is in you local network as host "mobile", then
-you could transfer the result of the query "album eq dubn" to the
-device with this command
-
-#+BEGIN_SRC sh
-./smartplaylist.sh -m scp-device -d "mobile:/mnt/sdcard2/Music/incoming" album eq dub
-#+END_SRC
-

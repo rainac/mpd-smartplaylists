@@ -1,7 +1,16 @@
+# Note: this Makefile is usually copied to the work directory by
+# smartplaylist.sh, together with one copy of the input data each in
+# file tmp.data and tmp.$intype, where intype is the automatically
+# detected input type by sniff-input-type.
+#
+# Make will be called to produce the file tmp.$mode, where mode is the
+# string given to the -m or --mode option of smartplaylist.sh.
+
 # suffixes:
 #
 #  spxml - XML format
-#  sp    - Text format
+#  spdxml - XML format, parentheses expanded
+#  sp    - Text format (pretty printed input)
 #  spsh  - Bash (mpc command line) format
 #  spfl  - File list as returned by MPD searches
 #  spfls  - File list as returned by MPD searches, separated by a special mark
@@ -24,10 +33,16 @@ device ?= "mobile:"  # scp host
 %.spxml: %.sp
 	cat $< | smartplaylist-txt2xml.sh > $@
 
+%.spdxml: %.spxml
+	cat $< | smartplaylist-distrib-or-over-and.sh > $@
+
 %.spsh: %.spxml
 	cat $< | smartplaylist-querysh.sh > $@
 
-%.spfl: %.spsh
+%.spsh: %.spdxml
+	cat $< | xsltproc genupdate-sh.xsl - > $@
+
+%.run %.spfl: %.spsh
 	cat $< | bash > $@
 
 %.scp %.scp-device: %.spfl

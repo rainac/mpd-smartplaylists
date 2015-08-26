@@ -25,8 +25,14 @@
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
-  <xsl:template match="or">
+  <xsl:template match="or[count(*)=1]">
     <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="or">
+    <xsl:text>(</xsl:text>
+    <xsl:apply-templates/>
+    <xsl:text>)</xsl:text>
   </xsl:template>
 
   <xsl:template match="and">

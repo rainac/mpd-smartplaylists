@@ -2,6 +2,44 @@
 
 * Installation
 
+There is currently no real installation procedure. Just clone the repo
+and cd to the directory:
+#+BEGIN_SRC sh
+git clone https://github.com/rainac/mpd-smartplaylists.git
+cd mpd-smartplaylists
+#+END_SRC
+Then run any operations from this directory, in particular the
+main script *smartplaylists.sh*:
+#+BEGIN_SRC sh
+./smartplaylist.sh artist = stones
+#+END_SRC
+
+** Requirements
+
+You need to install the [[https://github.com/rainac/p2x][P2X parser tool]] first (yes, this project is in
+part intended to showcase the use of P2X).
+
+Also, this project will most probably require a Linux system.
+
+** Quick start
+
+The *smartplaylists.sh* accepts a query in the form of command line
+arguments or from the standard input
+#+BEGIN_SRC sh
+./smartplaylist.sh artist = stones
+echo "artist = stones" | ./smartplaylist.sh      # the same
+#+END_SRC
+To use the transfer features, you will need two other options: ~-m~
+for the mode of operation and ~d~ to give the target device (local
+directory or host and directory):
+#+BEGIN_SRC sh
+./smartplaylist.sh -m tar -d ~/mymusic  artist = stones            # download from MPD to local directory
+./smartplaylist.sh -m tar -d mobile:SDCard/Music artist = stones   # transfer from MPD to remote host
+#+END_SRC
+To transfer stuff to a smartphone you should install the ~SSHelper~
+app, which provides the required tools like ~ssh~, ~tar~, ~rsync~,
+etc.
+
 * A custom text based language (representation) for Smartplaylists
 
 The idea is to create a small custom language to express queries to a
@@ -54,30 +92,54 @@ Using the smartplaylist client it looks like this
 
 ** And and Or queries
 
-Queries may be combined using either the
+Queries may be combined using either the *and* or the *or* operator:
 #+BEGIN_SRC sh
-./smartplaylist.sh rolling
+./smartplaylist.sh artist = rolling and artist = stones
+#+END_SRC
+is a more specific query than just ~artist = rolling~ but more general
+than ~artist = 'rolling stones'~. An *or* query looks very similar:
+#+BEGIN_SRC sh
+./smartplaylist.sh artist = rolling or artist = beatles
 #+END_SRC
 
+*** Precedence
+
+The *and* operator has a higher precedence than the *or* operator, it
+binds to its operands more tightly, so to say. Hence when you say
+#+BEGIN_SRC sh
+./smartplaylist.sh artist = rolling or artist = beatles and album = white
+#+END_SRC
+you will get everything from the Rolling Stones and The Beatles' White
+Album.
+
 ** Nested Queries using parentheses
+
+Sometimes it is desirable to also have an *or* query nested inside an
+*and* query. This is possible using parentheses:
+#+BEGIN_SRC sh
+./smartplaylist.sh '(' artist = rolling or artist = beatles ')' and album = white
+#+END_SRC
+will get just The Beatles' White Album, as the Stones do not have a
+"white" album (at least not in my collection).
 
 ** Assigning a playlist name to a playlist
 
 This is done using the colon ~:~ operator, which has the alias
 "is". For example:
-
 #+BEGIN_SRC sh
-
+./smartplaylist.sh white_album: artist = beatles and album = white
 #+END_SRC
+shall create a new playlist ~white_album~ on the MPD server,
+containing the results of the query on the right of the colon. The
+colon operator has a lower precedence than both
 
 * Command line interface for the Smartplaylists
 
-The basic command line program is smartplaylists.sh:
-
+The basic command line program is *smartplaylists.sh*. First of all,
+running
 #+BEGIN_SRC sh
-smartplaylists.sh -h
+./smartplaylists.sh -h
 #+END_SRC
-
 will show a summary of options.
 
 The main option is _-m_, which determines the mode of operation. For
@@ -85,17 +147,17 @@ example _-m spsh_ will generate shell code calling mpc with the given
 query and _-m spfl_ (the default) will execute the query and thus
 return the list of search results.
 
-smartplaylists.sh will take as query input the remaining command line
+*smartplaylists.sh* will take as query input the remaining command line
 arguments, for example:
 #+BEGIN_SRC sh
-smartplaylists.sh -m spsh hector and tito
+./smartplaylists.sh -m spsh hector and tito
 #+END_SRC
 
 When there are no arguments (other than options), then
 smartplaylists.sh will read from stdin. So the same example as before
 can also be stated as
 #+BEGIN_SRC sh
-echo "hector and tito" | smartplaylists.sh -m spsh
+echo "hector and tito" | ./smartplaylists.sh -m spsh
 #+END_SRC
 
 smartplaylist.sh shall in the future recognize different input
@@ -117,7 +179,6 @@ device with this command
 #+BEGIN_SRC sh
 ./smartplaylist.sh -m scp-device -d "mobile:/mnt/sdcard2/Music/incoming" album eq dub
 #+END_SRC
-
 
 
 * How does it work: Generating smart playlists for MPD with XSLT

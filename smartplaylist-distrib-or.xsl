@@ -45,8 +45,16 @@
     </xsl:for-each>
   </xsl:template>
 
+  <xsl:template match="and[paren/and]" mode="in-or">
+    <xsl:apply-templates/>
+  </xsl:template>
+
   <xsl:template match="and/paren[and]" mode="in-and">
     <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="paren" mode="in-or">
+    <xsl:apply-templates mode="in-or"/>
   </xsl:template>
 
   <xsl:template match="and" mode="in-and">

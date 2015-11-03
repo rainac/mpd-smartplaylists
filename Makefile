@@ -30,6 +30,12 @@ debug_flag ?=
 
 device ?= "mobile:"  # scp host
 
+%.spp2x: %.sp
+	p2x --output-mode y -p $(SMPL_HOME)/p2x.conf $< | tr '[:upper:]' '[:lower:]' | tee $@ > /dev/null
+
+%.spxml: %.spp2x
+	xsltproc $(SMPL_HOME)/create-smartplaylist.xsl $< | tee $@ > /dev/null
+
 %.spxml: %.sp
 	cat $< | smartplaylist-txt2xml.sh > $@
 

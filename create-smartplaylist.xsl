@@ -16,8 +16,16 @@
     </smart-playlists>
   </xsl:template>
 
+  <xsl:template match="text()" mode="get-text"/>
+  <xsl:template match="ca:t" mode="get-text">
+    <xsl:value-of select="."/>
+  </xsl:template>
+
   <xsl:template match="cx:colon" mode="in-root">
-    <playlist name="{cx:*[1]}">
+    <playlist>
+      <xsl:attribute name="name">
+        <xsl:apply-templates select="cx:*[1]" mode="get-text"/>
+      </xsl:attribute>
       <xsl:apply-templates select="cx:*[2]" mode="in-playlist"/>
     </playlist>
   </xsl:template>

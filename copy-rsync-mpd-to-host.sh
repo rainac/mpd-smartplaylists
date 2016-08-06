@@ -64,7 +64,7 @@ if [[ -n "$debug" ]]; then cat host-script.sh; fi
 
 cat > dev-script.sh <<EOF
 CURWD=\$PWD
-cd $DST_ROOT
+cd $DST_ROOT || exit 1
 EOF
 
 if [[ -n "$debug" ]]; then cat dev-script.sh; fi

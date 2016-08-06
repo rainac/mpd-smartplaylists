@@ -42,8 +42,13 @@ while getopts "$optstr" option; do
             DST_TAR_OPTS=--strip-components="${OPTARG}"
         ;;
         (d)
-            DST_HOST=${OPTARG%%:*}
-            DST_ROOT=${OPTARG#*:}
+            if [[ -z "${OPTARG:#:}" ]]; then
+                DST_HOST=${OPTARG%%:*}
+                DST_ROOT=${OPTARG#*:}
+            else
+                DST_HOST=
+                DST_ROOT=$OPTARG
+            fi
         ;;
         (m)
             MPD_HOST=${OPTARG%%:*}
@@ -67,11 +72,15 @@ EOF
 
 if [[ -n "$debug" ]]; then cat dev-script.sh; fi
 
-#scp -q host-script.sh $MPD_HOST:
-scp -q tmp.list dev-script.sh $DST_HOST:
+if [[ -n "$DST_HOST" ]]; then
+    #scp -q host-script.sh $MPD_HOST:
+    scp -q tmp.list dev-script.sh $DST_HOST:
+    #ssh $MPD_HOST "sh host-script.sh"
+    ssh $DST_HOST "\$SHELL dev-script.sh"
+else
+    $SHELL dev-script.sh
+fi
 
-#ssh $MPD_HOST "sh host-script.sh"
-ssh $DST_HOST "\$SHELL dev-script.sh"
 
 if [[ -z "$debug" ]]; then 
 #    ssh $MPD_HOST "rm -f host-script.sh && killall rsync"

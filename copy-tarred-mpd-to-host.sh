@@ -2,7 +2,11 @@
 
 MPD_HOST=${MPD_HOST:-192.168.0.1}
 
-MPD_ROOT=${MPD_ROOT:-/opt/music}
+if [[ -z "$MPD_ROOT" ]]; then
+    MPD_ROOT=/opt/music
+    echo warning, MPD_ROOT is not set, defaulting to $MPD_ROOT
+fi
+# MPD_ROOT=${MPD_ROOT:-/opt/music}
 
 MPD_BASE=$MPD_HOST:$MPD_ROOT
 

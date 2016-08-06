@@ -9,7 +9,7 @@ MPD_BASE=$MPD_HOST:$MPD_ROOT
 DST_HOST=${DST_HOST:-localhost}    #
 DST_ROOT=${DST_ROOT:-music}        # i.e. /home/user/music for user
 
-optstr=":vhDajJzZp:d:m:"
+optstr=":vhDajJzZp:d:m:W:"
 
 while getopts "$optstr" option; do
     case $option in
@@ -48,6 +48,9 @@ while getopts "$optstr" option; do
         (m)
             MPD_HOST=${OPTARG%%:*}
             MPD_ROOT=${OPTARG#*:}
+        ;;
+        (W)
+            flags=$OPTARG
         ;;
         (*)
         ;;

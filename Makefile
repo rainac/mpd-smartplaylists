@@ -30,6 +30,8 @@ debug_flag ?=
 
 device ?= "mobile:"  # scp host
 
+flags ?=
+
 %.spp2x: %.sp
 	p2x --output-mode y -p $(SMPL_HOME)/p2x.conf $< | tr '[:upper:]' '[:lower:]' | tee $@ > /dev/null
 
@@ -52,15 +54,15 @@ device ?= "mobile:"  # scp host
 	cat $< | bash > $@
 
 %.scp %.scp-device: %.spfl
-	cat $< | DST=$(device) copy-mpd-to-host.sh $(debug_flag) | bash
+	cat $< | DST=$(device) copy-mpd-to-host.sh $(debug_flag) -W $(flags) | bash
 # do not produce the target so this can be run repeatedly as a command mode
 
 %.tar %.tar-device: %.spfl
-	cat $< | copy-tarred-mpd-to-host.sh -d $(device) -z $(debug_flag)
+	cat $< | copy-tarred-mpd-to-host.sh $(debug_flag) -W $(flags) -d $(device) -z
 # do not produce the target so this can be run repeatedly as a command mode
 
 %.rsync %.rsync-pull %.rsync-device: %.spfl
-	cat $< | copy-rsync-from-mpd.sh -d $(device) $(debug_flag)
+	cat $< | copy-rsync-from-mpd.sh $(debug_flag) -W $(flags) -d $(device)
 # do not produce the target so this can be run repeatedly as a command mode
 
 #%.rsync-push %.rsync-device: %.spfl

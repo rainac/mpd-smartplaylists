@@ -19,10 +19,11 @@
 # set -x 
 
 sourceDir=$(dirname $(readlink -f $BASH_SOURCE))
+flags=()
 
 DST=handy:/mnt/sdcard2/music
 
-optstring=":hvDd:m:T:"
+optstring=":hvDd:m:T:W:"
 option=""
 
 make_silent_flag=-s
@@ -54,6 +55,9 @@ while getopts $optstring option; do
         ;;
         (m)
             mode=$OPTARG
+        ;;
+        (W)
+            flags="$flags$OPTARG,"
         ;;
         (*)
             echo "invalid option $OPTION"
@@ -138,7 +142,7 @@ intype=$(./sniff-input-type.sh $tmpdir/tmp.data)
 
 cp $tmpdir/tmp.data $tmpdir/tmp.$intype
 
-device=$DST make $make_silent_flag -C $tmpdir tmp.$mode
+make $make_silent_flag -C $tmpdir device=$DST flags=${flags:0:-1} tmp.$mode
 
 if [[ -f $tmpdir/tmp.$mode ]]; then
     cat $tmpdir/tmp.$mode

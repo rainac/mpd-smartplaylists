@@ -23,7 +23,7 @@ flags=()
 
 DST=handy:/mnt/sdcard2/music
 
-optstring=":hvDd:m:T:W:"
+optstring=":hvDd:m:T:W:x:"
 option=""
 
 make_silent_flag=-s
@@ -56,6 +56,10 @@ while getopts $optstring option; do
         (m)
             mode=$OPTARG
         ;;
+        (x)
+            mode=exec
+            command=$OPTARG
+        ;;
         (W)
             flags="$flags$OPTARG,"
         ;;
@@ -76,6 +80,7 @@ if [[ -n "$show_help" ]]; then
     echo "     scp                      send files in MPD result list to device with scp (use option -d)"
     echo "     tar                      send files in MPD result file to device with tar + ssh"
     echo "     rsync                    send files in MPD result file to device with rsync + ssh"
+    echo "     exec                     run command on MPD for each file found"
     echo "  -d <device>                set target device"
     echo ""
     echo "Query:"
@@ -142,7 +147,7 @@ intype=$(./sniff-input-type.sh $tmpdir/tmp.data)
 
 cp $tmpdir/tmp.data $tmpdir/tmp.$intype
 
-make $make_silent_flag -C $tmpdir device=$DST flags=${flags:0:-1} tmp.$mode
+make $make_silent_flag -C $tmpdir device=$DST flags=${flags:0:-1} command="${command}" tmp.$mode
 
 if [[ -f $tmpdir/tmp.$mode ]]; then
     cat $tmpdir/tmp.$mode

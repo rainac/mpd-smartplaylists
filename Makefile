@@ -15,6 +15,7 @@
 #  spfl  - File list as returned by MPD searches
 #  spfls  - File list as returned by MPD searches, separated by a special mark
 #  spfl0  - File list as returned by MPD searches, 0 separated
+#  exec - Run command on MPD for each file found
 #  rsync-handy - Testing
 #  rsync-XXX - Testing
 #  scp-handy - Testing
@@ -53,6 +54,9 @@ flags ?=
 %.run %.spfl: %.spsh
 	cat $< | bash > $@
 
+%.spfl0: %.spfl
+	awk '{ ORS=""; print $0; print "\000"; }' $< > $@
+
 %.scp %.scp-device: %.spfl
 	cat $< | DST=$(device) copy-mpd-to-host.sh $(debug_flag) -W $(flags) | bash
 # do not produce the target so this can be run repeatedly as a command mode
@@ -68,3 +72,11 @@ flags ?=
 #%.rsync-push %.rsync-device: %.spfl
 #	cat $< | copy-rsync-mpd-to-host.sh -d $(device) $(debug_flag)
 # do not produce the target so this can be run repeatedly as a command mode
+
+%.exec: %.spfl0
+	cat $< | mpd-command.sh $(debug_flag) -W $(flags) -c $(command)
+# do not produce the target so this can be run repeatedly as a command mode
+
+# targets for (local) development
+check:
+	./tests/test_parser.sh

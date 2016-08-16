@@ -15,7 +15,7 @@ EOF
 scp -q rcfile $MPD_HOST:
 ssh -t $MPD_HOST source rcfile
 
-ssh $MPD_HOST rm rcfile
-rm rcfile
+ssh $MPD_HOST rm -f rcfile
+rm -f rcfile
 
 exit res

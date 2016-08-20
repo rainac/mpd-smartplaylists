@@ -115,4 +115,8 @@ test_and_nested_or_query4() {
     assertEquals "0" "$?"
 }
 
+test_cleanup() {
+    rm -f tmp.sh
+}
+
 . shunit2

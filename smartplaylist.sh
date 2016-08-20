@@ -31,11 +31,11 @@ make_silent_flag=-s
 while getopts $optstring option; do
     case $option in
         (\?)
-        echo "admproc: error: illegal option -$OPTARG specified" >&2
+        echo "mpdsmproc: error: illegal option -$OPTARG specified" >&2
         exit 1
         ;;
         (\:)
-        echo "admproc: error: argument expected after -$OPTARG option" >&2
+        echo "mpdsmproc: error: argument expected after -$OPTARG option" >&2
         exit 1
         ;;
         (h)

@@ -11,11 +11,39 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="smart-playlists">
+    <smart-playlists>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </smart-playlists>
+  </xsl:template>
+
+  <xsl:template match="paren">
+    <paren>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </paren>
+  </xsl:template>
+
   <xsl:template match="or">
     <or>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="in-or"/>
     </or>
+  </xsl:template>
+
+  <xsl:template match="and">
+    <and>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="in-and"/>
+    </and>
+  </xsl:template>
+
+  <xsl:template match="and" mode="in-or">
+    <and>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="in-and"/>
+    </and>
   </xsl:template>
 
   <xsl:template match="and[paren/or]">
@@ -49,6 +77,18 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="paren/paren" mode="in-or">
+    <xsl:apply-templates mode="in-or"/>
+  </xsl:template>
+
+  <xsl:template match="and" mode="in-and">
+    <xsl:apply-templates mode="in-and"/>
+  </xsl:template>
+
+  <xsl:template match="paren[paren]" mode="in-and">
+    <xsl:apply-templates/>
+  </xsl:template>
+
   <xsl:template match="and/paren[and]" mode="in-and">
     <xsl:apply-templates/>
   </xsl:template>
@@ -57,8 +97,10 @@
     <xsl:apply-templates mode="in-or"/>
   </xsl:template>
 
-  <xsl:template match="and" mode="in-and">
-    <xsl:apply-templates/>
+  <xsl:template match="paren" mode="in-and">
+    <paren>
+      <xsl:apply-templates/>
+    </paren>
   </xsl:template>
 
   <xsl:template match="*" mode="in-and">

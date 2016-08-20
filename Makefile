@@ -36,11 +36,17 @@ flags ?=
 %.spp2x: %.sp
 	p2x --output-mode y -p $(SMPL_HOME)/p2x.conf $< | tr '[:upper:]' '[:lower:]' | tee $@ > /dev/null
 
-%.spxml: %.spp2x
+%.spxml1: %.spp2x
 	xsltproc $(SMPL_HOME)/create-smartplaylist.xsl $< | tee $@ > /dev/null
 
-%.spxml: %.sp
-	cat $< | smartplaylist-txt2xml.sh > $@
+%.spxml2: %.spxml1
+	xsltproc $(SMPL_HOME)/create-smartplaylist2.xsl $< | tee $@ > /dev/null
+
+%.spxml: %.spxml2
+	cp $< $@
+
+#%.spxml: %.sp
+#	cat $< | smartplaylist-txt2xml.sh > $@
 
 %.spdxml: %.spxml
 	cat $< | smartplaylist-distrib-or-over-and.sh > $@

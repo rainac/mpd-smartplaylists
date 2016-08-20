@@ -12,7 +12,7 @@
 
   <xsl:template match="cx:root">
     <smart-playlists version="1.0">
-      <xsl:apply-templates mode="in-root"/>
+      <xsl:apply-templates/>
     </smart-playlists>
   </xsl:template>
 
@@ -21,88 +21,41 @@
     <xsl:value-of select="."/>
   </xsl:template>
 
-  <xsl:template match="cx:colon" mode="in-root">
+  <xsl:template match="cx:colon">
     <playlist>
       <xsl:attribute name="name">
         <xsl:apply-templates select="cx:*[1]" mode="get-text"/>
       </xsl:attribute>
-      <xsl:apply-templates select="cx:*[2]" mode="in-playlist"/>
+      <xsl:apply-templates select="cx:*[2]"/>
     </playlist>
   </xsl:template>
-  <xsl:template match="cx:or" mode="in-root">
-    <xsl:apply-templates select="."/>
-  </xsl:template>
-  <xsl:template match="cx:and" mode="in-root">
-    <xsl:apply-templates select="."/>
-  </xsl:template>
-  <xsl:template match="cx:equal" mode="in-root">
-    <and mode="auto-root">
-      <xsl:apply-templates select="."/>
-    </and>
-  </xsl:template>
-  <xsl:template match="cx:null" mode="in-root"/>
-  <xsl:template match="cx:nl" mode="in-root">
-    <xsl:apply-templates mode="in-root"/>
-  </xsl:template>
-  <xsl:template match="cx:newline" mode="in-root">
-    <xsl:apply-templates mode="in-root"/>
-  </xsl:template>
-  <xsl:template match="cx:*" mode="in-root">
-    <and mode="auto-root">
-      <xsl:apply-templates select="." mode="in-and"/>
-    </and>
+
+  <xsl:template match="cx:greater|cx:filter-out|cx:filter">
+    <filter>      
+      <xsl:apply-templates select="cx:*[1]"/>
+      <xsl:apply-templates select="cx:*[position()>1]"/>
+    </filter>
   </xsl:template>
 
-  <xsl:template match="cx:or" mode="in-playlist">
-    <xsl:apply-templates select="."/>
-  </xsl:template>
-  <xsl:template match="cx:*" mode="in-playlist">
-    <or>
-      <xsl:apply-templates select="." mode="in-or"/>
-    </or>
-  </xsl:template>
-  
-  <xsl:template match="cx:and">
-    <or>
-      <and>
-        <xsl:apply-templates/>
-      </and>
-    </or>
-  </xsl:template>
-
-  <xsl:template match="cx:and">
-    <and>
-      <xsl:apply-templates mode="in-and"/>
-    </and>
-  </xsl:template>
-
-  <xsl:template match="cx:and" mode="in-or">
-    <xsl:apply-templates select="."/>
-  </xsl:template>
-  <xsl:template match="cx:*" mode="in-or">
-    <and>
-      <xsl:apply-templates select="." mode="in-and"/>
-    </and>
+  <xsl:template match="cx:less|cx:filter-in">
+    <filter-in>      
+      <xsl:apply-templates select="cx:*[1]"/>
+      <xsl:apply-templates select="cx:*[position()>1]"/>
+    </filter-in>
   </xsl:template>
 
   <xsl:template match="cx:or">
     <or>
-      <xsl:apply-templates mode="in-or"/>
+      <xsl:apply-templates/>
     </or>
   </xsl:template>
-
-  <xsl:template match="cx:*" mode="in-and">
-    <query type="artist">
-      <xsl:apply-templates select="."/>
-    </query>
-  </xsl:template>
-  <xsl:template match="cx:and" mode="in-and">
-    <xsl:apply-templates mode="in-and"/>
-  </xsl:template>
-  <xsl:template match="cx:equal|cx:l_paren" mode="in-and">
-    <xsl:apply-templates select="."/>
-  </xsl:template>
   
+  <xsl:template match="cx:and">
+    <and>
+      <xsl:apply-templates/>
+    </and>
+  </xsl:template>
+
   <xsl:template match="cx:equal">
     <query>
       <xsl:attribute name="type">
@@ -114,12 +67,18 @@
 
   <xsl:template match="cx:l_paren">
     <paren>
-      <xsl:apply-templates mode="in-root"/>
+      <xsl:apply-templates/>
     </paren>
   </xsl:template>
 
   <xsl:template match="cx:*">
     <xsl:apply-templates select="cx:*|ca:t"/>
+  </xsl:template>
+
+  <xsl:template match="cx:id">
+    <id>
+      <xsl:apply-templates select="cx:*|ca:t"/>
+    </id>
   </xsl:template>
 
   <xsl:template match="ca:ignore"/>

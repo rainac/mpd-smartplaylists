@@ -32,6 +32,18 @@ test_simple_filter_query4() {
     assertEquals "0" "$?"
 }
 
+test_simple_filter_quer5() {
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "abc>ttt" | tee tmp.sh)
+    echo "mpc search artist abc|grep -i -v \"ttt\"" | diff -B -w - tmp.sh
+    assertEquals "0" "$?"
+}
+
+test_simple_filter_query6() {
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "abc<ttt" | tee tmp.sh)
+    echo "mpc search artist abc|grep -i \"ttt\"" | diff -B -w - tmp.sh
+    assertEquals "0" "$?"
+}
+
 test_cleanup() {
     rm -f tmp.sh
 }

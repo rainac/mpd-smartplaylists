@@ -2,6 +2,8 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
   <xsl:param name="format" select="''"/>
+  <xsl:param name="mpc" select="'mpc'"/>
+
   <xsl:variable name="format-flag">
     <xsl:if test="$format">-f "<xsl:value-of select="$format"/>"</xsl:if>
   </xsl:variable>
@@ -20,6 +22,13 @@
       mpc load tmp-update-pls
     </xsl:if>
     <xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="smart-playlists">
+    <xsl:for-each select="*">
+      <xsl:apply-templates select="."/>
+      <xsl:text>&#xa;</xsl:text>
+    </xsl:for-each>
   </xsl:template>
 
   <xsl:template match="playlist">
@@ -54,7 +63,10 @@
 
   <xsl:template match="or">
     <xsl:text>(</xsl:text>
-    <xsl:apply-templates/>
+    <xsl:for-each select="*">
+      <xsl:apply-templates select="."/>
+      <xsl:text>&#xa;</xsl:text>
+    </xsl:for-each>
     <xsl:text>)</xsl:text>
   </xsl:template>
 

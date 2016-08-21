@@ -23,10 +23,11 @@ flags=()
 
 DST=handy:/mnt/sdcard2/music
 
-optstring=":hvDd:m:T:W:x:"
+optstring=":hvDd:f:m:T:W:x:"
 option=""
 
 make_silent_flag=-s
+format=""
 
 while getopts $optstring option; do
     case $option in
@@ -55,6 +56,9 @@ while getopts $optstring option; do
         ;;
         (m)
             mode=$OPTARG
+        ;;
+        (f)
+            format=$OPTARG
         ;;
         (x)
             mode=exec
@@ -143,7 +147,7 @@ intype=$(./sniff-input-type.sh $tmpdir/tmp.data)
 
 cp $tmpdir/tmp.data $tmpdir/tmp.$intype
 
-make $make_silent_flag -C $tmpdir device=$DST flags=${flags:0:-1} command="${command}" tmp.$mode
+make $make_silent_flag -C $tmpdir device=$DST flags=${flags:0:-1} command="${command}" format="${format}" tmp.$mode
 
 if [[ -f $tmpdir/tmp.$mode ]]; then
     cat $tmpdir/tmp.$mode

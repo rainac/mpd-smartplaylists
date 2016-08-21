@@ -31,6 +31,8 @@ debug_flag ?=
 
 device ?= "mobile:"  # scp host
 
+format ?=
+
 flags ?=
 
 %.spp2x: %.sp
@@ -51,11 +53,8 @@ flags ?=
 %.spdxml: %.spxml
 	cat $< | smartplaylist-distrib-or-over-and.sh > $@
 
-%.spsh: %.spxml
-	cat $< | smartplaylist-querysh.sh > $@
-
 %.spsh: %.spdxml
-	cat $< | xsltproc genupdate-sh.xsl - > $@
+	cat $< | xsltproc --stringparam format "$(format)" $(SMPL_HOME)/genupdate-sh.xsl - > $@
 
 %.run %.spfl: %.spsh
 	cat $< | bash > $@

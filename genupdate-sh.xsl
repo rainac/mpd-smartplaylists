@@ -1,6 +1,11 @@
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+  <xsl:param name="format" select="''"/>
+  <xsl:variable name="format-flag">
+    <xsl:if test="$format">-f "<xsl:value-of select="$format"/>"</xsl:if>
+  </xsl:variable>
+
   <xsl:output method="text"/>
   <xsl:template match="text()"/>
   
@@ -54,7 +59,7 @@
   </xsl:template>
 
   <xsl:template match="and">
-    mpc search <xsl:apply-templates/>
+    mpc <xsl:value-of select="$format-flag"/> search <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="query">

@@ -2,52 +2,70 @@
 
 SMPL_HOME=${SMPL_HOME:-$(dirname $BASH_SOURCE)/..}
 
+. ${SMPL_HOME}/tests/funcs.sh
+
 test_simple_filter_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "album=abc>ttt" | tee tmp.sh)
     echo "mpc search album abc|grep -i -v \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_simple_filter_query2() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "album=abc<ttt" | tee tmp.sh)
     echo "mpc search album abc|grep -i \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_simple_filter_query3() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "album=abc filter ttt" | tee tmp.sh)
     echo "mpc search album abc|grep -i -v \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_simple_filter_query3a() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "album=abc filter_out ttt" | tee tmp.sh)
     echo "mpc search album abc|grep -i -v \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_simple_filter_query4() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "album=abc filter_in ttt" | tee tmp.sh)
     echo "mpc search album abc|grep -i \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_simple_filter_quer5() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "abc>ttt" | tee tmp.sh)
     echo "mpc search artist abc|grep -i -v \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_simple_filter_query6() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "abc<ttt" | tee tmp.sh)
     echo "mpc search artist abc|grep -i \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_filter_prec_and() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "abc and def<ttt" | tee tmp.sh)
     echo "mpc search artist abc artist def|grep -i \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_filter_prec_or() {
@@ -56,6 +74,8 @@ test_filter_prec_or() {
            mpc search artist abc \n\
            mpc search artist def)|grep -i \"ttt\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_filter_prec_paren() {
@@ -64,6 +84,8 @@ test_filter_prec_paren() {
            mpc search artist abc|grep -i -v \"t11\" \n\
            mpc search artist def|grep -i \"t22\")" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_filter_prec_and_or() {
@@ -72,6 +94,8 @@ test_filter_prec_and_or() {
            mpc search artist abc artist def|grep -i -v \"t11\" \n\
            mpc search artist ghi artist jkl|grep -i \"t22\")" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 _test_filter_prec_and_or_error1() {
@@ -80,6 +104,8 @@ _test_filter_prec_and_or_error1() {
            mpc search artist abc|grep -i -v \"t11\" \n\
            mpc search artist def|grep -i \"t22\")" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 _test_filter_prec_and_or_error2() {
@@ -88,6 +114,8 @@ _test_filter_prec_and_or_error2() {
            mpc search artist abc|grep -i -v \"t11\" \n\
            mpc search artist def|grep -i \"t22\")" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_filter_prec_and_or_poss() {
@@ -98,6 +126,8 @@ test_filter_prec_and_or_poss() {
            mpc search artist ghi\n\
            mpc search artist jkl)|grep -i \"t22\")" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
+    cat tmp.sh
+    syntaxCheck tmp.sh
 }
 
 test_cleanup() {

@@ -84,5 +84,10 @@ flags ?=
 # do not produce the target so this can be run repeatedly as a command mode
 
 # targets for (local) development
-check:
+check: test1 test2
+
+test1:
 	./tests/test_parser.sh
+
+test2:
+	./tests/test_parser2.sh

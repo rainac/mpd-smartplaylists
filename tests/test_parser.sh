@@ -25,12 +25,12 @@ test_or_query() {
 }
 
 test_string_query() {
-    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album = "a B c" | tee tmp.sh)
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album = "'a B c'" | tee tmp.sh)
     echo "mpc search album a album 'a b c'" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
 
-    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album = 'a B c' | tee tmp.sh)
-    echo "mpc search album a album 'a b c'" | diff -B -w - tmp.sh
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album = '"a B c"' | tee tmp.sh)
+    echo "mpc search album a album \"a b c\"" | diff -B -w - tmp.sh
     assertEquals "0" "$?"
 }
 

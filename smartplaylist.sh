@@ -133,11 +133,7 @@ if [[ -z "$1" ]]; then
 else
     echo -n "" > $tmpdir/tmp.data
     while [[ -n "$1" ]]; do
-        if (echo "$1" | grep ' ' && !( echo "$1" | grep '"' ||  echo "$1" | grep "'")) > /dev/null; then
-            echo -n "'$1' " >> $tmpdir/tmp.data
-        else
-            echo -n "$1 " >> $tmpdir/tmp.data
-        fi
+        echo -n "$1 " >> $tmpdir/tmp.data
         shift
     done
     echo "" >> $tmpdir/tmp.data

@@ -30,14 +30,14 @@
     </playlist>
   </xsl:template>
 
-  <xsl:template match="cx:greater|cx:filter-out|cx:filter">
+  <xsl:template match="cx:greater|cx:filter_out|cx:filter">
     <filter>      
       <xsl:apply-templates select="cx:*[1]"/>
       <xsl:apply-templates select="cx:*[position()>1]"/>
     </filter>
   </xsl:template>
 
-  <xsl:template match="cx:less|cx:filter-in">
+  <xsl:template match="cx:less|cx:filter_in">
     <filter-in>      
       <xsl:apply-templates select="cx:*[1]"/>
       <xsl:apply-templates select="cx:*[position()>1]"/>

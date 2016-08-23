@@ -148,6 +148,33 @@ test_and_nested_or_query4() {
     syntaxCheck tmp.sh
 }
 
+test_playlist_def() {
+    cat > cmp.sh <<EOF
+mpc rm tmp-update-pls
+mpc save tmp-update-pls
+mpc clear
+(
+  (
+   mpc  search  artist abc
+   mpc  search  artist def
+  ) | grep -i -v "t11"
+  (
+   mpc  search  artist ghi
+   mpc  search  artist jkl
+  ) | grep -i "t22"
+) | mpc add
+mpc rm tt
+mpc save tt
+
+mpc clear
+mpc load tmp-update-pls
+EOF
+    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh tt: '(abc or def>t11) or (ghi or jkl<t22)' | tee tmp.sh)
+    cmpMultiLineShellScript tmp.sh cmp.sh
+    cat tmp.sh
+    syntaxCheck tmp.sh
+}
+
 test_cleanup() {
     rm -f tmp.sh cmp.sh
 }

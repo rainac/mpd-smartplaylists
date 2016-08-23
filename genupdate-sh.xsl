@@ -42,7 +42,7 @@
   <xsl:template match="filter|filter-out">
     <xsl:apply-templates select="*[1]"/>
     <xsl:for-each select="*[position()>1]">
-      <xsl:text>| grep -i -v "</xsl:text>
+      <xsl:text> | grep -i -v "</xsl:text>
       <xsl:value-of select="."/>
       <xsl:text>"</xsl:text>
     </xsl:for-each>
@@ -51,7 +51,7 @@
   <xsl:template match="filter-in">
     <xsl:apply-templates select="*[1]"/>
     <xsl:for-each select="*[position()>1]">
-      <xsl:text>| grep -i "</xsl:text>
+      <xsl:text> | grep -i "</xsl:text>
       <xsl:value-of select="."/>
       <xsl:text>"</xsl:text>
     </xsl:for-each>
@@ -61,17 +61,35 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="/" mode="indent-"/>
+  <xsl:template match="/*" mode="indent-"/>
+  <xsl:template match="/*/*" mode="indent-"/>
+
+  <xsl:template match="*" name="indent-" mode="indent-">
+    <xsl:text> </xsl:text>
+    <xsl:apply-templates select=".." mode="indent-"/>
+  </xsl:template>
+
+  <xsl:template match="*" name="indent" mode="indent">
+    <xsl:apply-templates select=".." mode="indent-"/>
+  </xsl:template>
+
   <xsl:template match="or">
+    <xsl:call-template name="indent"/>
     <xsl:text>(</xsl:text>
+    <xsl:text>&#xa;</xsl:text>
     <xsl:for-each select="*">
       <xsl:apply-templates select="."/>
       <xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
+    <xsl:call-template name="indent"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <xsl:template match="and">
-    mpc <xsl:value-of select="$format-flag"/> search <xsl:apply-templates/>
+    <xsl:call-template name="indent"/>
+    <xsl:text>mpc </xsl:text>
+    <xsl:value-of select="$format-flag"/> search <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="query">

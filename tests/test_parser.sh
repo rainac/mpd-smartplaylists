@@ -6,46 +6,46 @@ SMPL_HOME=${SMPL_HOME:-$(dirname $BASH_SOURCE)/..}
 
 test_simple_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=abc | tee tmp.sh)
-    echo "mpc search album abc" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo "mpc search album abc" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 test_simple_query_def() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh abc | tee tmp.sh)
-    echo "mpc search artist abc" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo "mpc search artist abc" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
 test_and_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album=b | tee tmp.sh)
-    echo "mpc search album a album b" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo "mpc search album a album b" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 test_or_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a or album=b | tee tmp.sh)
-    echo -e "(\nmpc search album a\nmpc search album b)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo -e "(\nmpc search album a\nmpc search album b)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
 test_string_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album = "'a B c'" | tee tmp.sh)
-    echo "mpc search album a album 'a b c'" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo "mpc search album a album 'a b c'" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=a and album = '"a B c"' | tee tmp.sh)
-    echo "mpc search album a album \"a b c\"" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo "mpc search album a album \"a b c\"" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
 test_and3() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and album=god and title=child | tee tmp.sh)
-    echo "mpc search  artist bad album god title child" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    echo "mpc search  artist bad album god title child" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -54,8 +54,8 @@ test_or3() {
     echo "(
     mpc search  artist bad
     mpc search  album god
-    mpc search  title child)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  title child)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -64,8 +64,8 @@ test_and_or1() {
     echo "(
     mpc search  artist bad
     mpc search  album god title t
-    mpc search  title child title t)" | tee tmp2.sh | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  title child title t)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -73,22 +73,22 @@ test_and_nested_or_query() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and '(' album=god or album=rise ')' | tee tmp.sh)
     echo "(
     mpc search  artist bad album god
-    mpc search  artist bad album rise)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  artist bad album rise)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and '(' album=god or album=rise ')' and title=miss| tee tmp.sh)
     echo "(
     mpc search  artist bad album god title miss
-    mpc search  artist bad album rise title miss)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  artist bad album rise title miss)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh '(' album=god or album=rise ')' and title=miss| tee tmp.sh)
     echo "(
     mpc search  album god title miss
-    mpc search  album rise title miss)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  album rise title miss)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -98,8 +98,8 @@ test_and_nested_or_query2() {
     mpc search  artist bad album god title miss
     mpc search  artist bad album god title child
     mpc search  artist bad album rise title miss
-    mpc search  artist bad album rise title child)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  artist bad album rise title child)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -108,8 +108,8 @@ test_and_nested_or_query3() {
     echo "(
     mpc search  artist bad album god
     mpc search  artist bad artist good album devil
-    mpc search  artist bad artist good album rise)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  artist bad artist good album rise)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -118,8 +118,8 @@ test_and_nested_or_query3a() {
     echo "(
     mpc search  artist bad album god
     mpc search  artist bad artist good album devil
-    mpc search  artist bad artist good album rise)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  artist bad artist good album rise)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
@@ -127,13 +127,13 @@ test_and_nested_or_query4() {
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh artist=bad and '(' album=god or good ')' | tee tmp.sh)
     echo "(
     mpc search  artist bad album god
-    mpc search  artist bad artist good)" | diff -B -w - tmp.sh
-    assertEquals "0" "$?"
+    mpc search  artist bad artist good)" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
     syntaxCheck tmp.sh
 }
 
 test_cleanup() {
-    rm -f tmp.sh
+    rm -f tmp.sh cmp.sh
 }
 
 . shunit2

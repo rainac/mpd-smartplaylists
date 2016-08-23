@@ -12,15 +12,15 @@
   <xsl:template match="text()"/>
   
   <xsl:template match="/">
-    <xsl:if test="//playlist">
-      mpc rm tmp-update-pls
-      mpc save tmp-update-pls
-    </xsl:if>
+    <xsl:if test="//playlist"
+            >mpc rm tmp-update-pls
+mpc save tmp-update-pls
+</xsl:if>
     <xsl:apply-templates/>
-    <xsl:if test="//playlist">
-      mpc clear
-      mpc load tmp-update-pls
-    </xsl:if>
+    <xsl:if test="//playlist"
+            >mpc clear
+mpc load tmp-update-pls
+</xsl:if>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
@@ -32,10 +32,10 @@
   </xsl:template>
 
   <xsl:template match="playlist">
-    mpc clear
+    <xsl:text>mpc clear&#xa;</xsl:text>
     <xsl:apply-templates/> | mpc add
-    mpc rm <xsl:value-of select="@name"/>
-    mpc save <xsl:value-of select="@name"/>
+mpc rm <xsl:value-of select="@name"/>
+mpc save <xsl:value-of select="@name"/>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 

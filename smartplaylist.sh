@@ -148,9 +148,12 @@ intype=$(./sniff-input-type.sh $tmpdir/tmp.data)
 cp $tmpdir/tmp.data $tmpdir/tmp.$intype
 
 make $make_silent_flag -C $tmpdir device=$DST flags=${flags:0:-1} command="${command}" format="${format}" tmp.$mode
+res=$?
 
 if [[ -f $tmpdir/tmp.$mode ]]; then
     cat $tmpdir/tmp.$mode
 fi
 
 rm -rf $tmpdir
+
+exit $res

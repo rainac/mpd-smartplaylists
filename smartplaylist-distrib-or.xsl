@@ -8,6 +8,9 @@
   <xsl:output method="xml"/>
 
   <xsl:template match="/">
+    <xsl:if test=".//and//filter">
+      <xsl:message terminate="yes">A FILTER applied to just one operand of an AND is not allowed</xsl:message>
+    </xsl:if>
     <xsl:apply-templates/>
   </xsl:template>
 

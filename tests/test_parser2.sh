@@ -98,24 +98,20 @@ test_filter_prec_and_or() {
     syntaxCheck tmp.sh
 }
 
-_test_filter_prec_and_or_error1() {
-    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "(abc and def>t11) and (ghi and jkl<t22)" | tee tmp.sh)
-    echo -e "(\n\
-           mpc search artist abc|grep -i -v \"t11\" \n\
-           mpc search artist def|grep -i \"t22\")" > cmp.sh
-    cmpMultiLineShellScript tmp.sh cmp.sh
-    cat tmp.sh
-    syntaxCheck tmp.sh
+test_filter_prec_and_or_error1() {
+    $SMPL_HOME/smartplaylist.sh -m spsh "(abc and def>t11) and (ghi and jkl<t22)" 2> error.txt
+    res=$?
+    assertNotEquals "This expression should raise an error" "0" "$res"
+    grep -i "filter.*and.*not.*allowed" error.txt
+    assertEquals "There should be an error message" "0" "$?"
 }
 
-_test_filter_prec_and_or_error2() {
-    cmd=$($SMPL_HOME/smartplaylist.sh -m spsh "(abc or def>t11) and (ghi or jkl<t22)" | tee tmp.sh)
-    echo -e "(\n\
-           mpc search artist abc|grep -i -v \"t11\" \n\
-           mpc search artist def|grep -i \"t22\")" > cmp.sh
-    cmpMultiLineShellScript tmp.sh cmp.sh
-    cat tmp.sh
-    syntaxCheck tmp.sh
+test_filter_prec_and_or_error2() {
+    $SMPL_HOME/smartplaylist.sh -m spsh "(abc or def>t11) and (ghi or jkl<t22)" 2> error.txt
+    res=$?
+    assertNotEquals "This expression should raise an error" "0" "$res"
+    grep -i "filter.*and.*not.*allowed" error.txt
+    assertEquals "There should be an error message" "0" "$?"
 }
 
 test_filter_prec_and_or_poss() {
@@ -131,7 +127,7 @@ test_filter_prec_and_or_poss() {
 }
 
 test_cleanup() {
-    rm -f tmp.sh cmp.sh
+    rm -f tmp.sh cmp.sh error.txt
 }
 
 . shunit2

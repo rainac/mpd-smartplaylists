@@ -1,0 +1,42 @@
+<mpdview>
+  <date>{{ date }}</date>
+  <version>{{ date }}</version>
+  <servername>{{servername }}</servername>
+
+  <status/>
+
+  <actions>
+    <play><name>Play</name></play>
+    <pause>Pause</pause>
+    <next>Next</next>
+    <prev>Prev</prev>
+    <break/>
+
+    <repeat>Repeat</repeat>
+    <random>Random</random>
+    <single>Single</single>
+    <consume>Consume</consume>
+    <break/>
+
+    <status><name>Status</name></status>
+    <current>Current</current>
+    <stats>Stats</stats>
+    <lsplaylistsplain>List playlists (txt)</lsplaylistsplain>
+    <playlistplain>Playlist (txt)</playlistplain>
+    <break/>
+
+    <clear>Clear</clear>
+    <crop>Crop</crop>
+    <shuffle>Shuffle</shuffle>
+    <break/>
+
+    <replaygainplain>Replaygain (txt)</replaygainplain>
+    <search>Search</search>
+    <save>Save</save>
+    <load>Load</load>
+    <ls>Ls</ls>
+  </actions>
+
+  <log/>
+
+</mpdview>

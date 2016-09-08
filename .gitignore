@@ -1,3 +1,4 @@
 # ignored pathes
 README.tex
 *~
+*.pyc

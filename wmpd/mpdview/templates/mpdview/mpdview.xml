@@ -3,15 +3,24 @@
   <version>{{ date }}</version>
   <servername>{{servername }}</servername>
 
-  <status/>
-
+  <status>
+    <fancy-status>
+    </fancy-status>
   <actions>
+    <prev>&lt;&lt; Prev</prev>
     <play><name>Play</name></play>
     <pause>Pause</pause>
-    <next>Next</next>
-    <prev>Prev</prev>
+    <next>Next &gt;&gt;</next>
     <break/>
+  </actions>
+  </status>
 
+  <playlist>
+    <fancy-playlist/>
+    <text-playlist/>
+  </playlist>
+
+  <actions>
     <repeat>Repeat</repeat>
     <random>Random</random>
     <single>Single</single>
@@ -36,6 +45,10 @@
     <load>Load</load>
     <ls>Ls</ls>
   </actions>
+
+  <status>
+    <text-status/>
+  </status>
 
   <log/>
 

@@ -56,19 +56,13 @@ def closepipe(pipe):
     return res
 
 
-class QueryForm(forms.Form):
-    q = forms.EmailField(widget=forms.TextInput(attrs={'size': 50 }),
-                         label="Query",
-                         help_text="Enter your query.")
-    cmd = forms.CharField(label="Command", max_length=500, required=False,
-                             help_text="Command shell code",
-                             widget=forms.Textarea(attrs={'cols': 40, 'rows': 3 }))
-    input = forms.CharField(label="Input", max_length=500, required=False,
-                             help_text="Input for command",
-                             widget=forms.Textarea(attrs={'cols': 40, 'rows': 3 }))
+class TextFieldForm(forms.Form):
+    q = forms.CharField(max_length=500, required=False)
+    cmd = forms.CharField(max_length=500, required=False)
+    input = forms.CharField(max_length=500, required=False)
 
 def view_playlist(request):
-    qform = QueryForm(request.POST)
+    qform = TextFieldForm(request.POST)
     return render(request, 'mpdview/mpd.html', {'files': sout, 'qform': qform})
 
 def build_format_json(fields):
@@ -107,7 +101,7 @@ def plist_info(request):
 def ajax_query(request):
     sout = ''
     if request.method == 'POST':
-        qform = QueryForm(request.POST)
+        qform = TextFieldForm(request.POST)
         if form.is_valid():
             query = qform.cleaned_data['q']
 
@@ -176,16 +170,31 @@ def ajax_python(request):
 
 
 def ajax_system(request, command=None, input=None):
-    if command is None:
-        command = gpParam(request, 'cmd', '')
-    if input is None:
-        input = gpParam(request, 'input', '')
-
+    if request.method == "GET":
+        form = TextFieldForm(request.GET)
+    else:
+        form = TextFieldForm(request.POST)
+    if form.is_valid():
+        if command is None:
+            command = form.cleaned_data['cmd']
+        if input is None:
+            input = form.cleaned_data['input']
+    else:
+        print "Error: Form invalid!"
+#    print 'command', command
     sout = runpipe(command.split(' '), input)[0]
 
     return HttpResponse(sout)
 
 def ajax_mpc(request, command=None):
-    if command is None:
-        command = gpParam(request, 'cmd', '')
+    if request.method == "GET":
+        form = TextFieldForm(request.GET)
+    else:
+        print request.POST
+        form = TextFieldForm(request.POST)
+    if form.is_valid():
+        command = form.cleaned_data['cmd']
+    else:
+        print "Error: Form invalid!"
+#    print "command: ", command
     return ajax_system(request, 'mpc ' + command)

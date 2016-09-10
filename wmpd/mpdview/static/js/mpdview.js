@@ -36,10 +36,13 @@ wmpc.PostprocGenHTML = function(txt) {
     }
 }
 
-wmpc.Request = function(method, url, data, callback, error) {
+wmpc.Request = function(method, url, data, headers, callback, error) {
     d = new Object();
     d.request = wmpc.CreateRequest();
     d.request.open(method, url, true);
+    for (h in headers) {
+        d.request.setRequestHeader(h, headers[h]);
+    }
     d.request.onreadystatechange = function f() {
 //        console.log('onreadystatechange: ' + url + ': ' +  d.request.readyState);
         switch(d.request.readyState) {
@@ -58,18 +61,41 @@ wmpc.Request = function(method, url, data, callback, error) {
 }
 
 wmpc.Get = function(url, callback) {
-//    console.log('wmpc.Get: ' + url);
-    return wmpc.Request('GET', url, '', callback);
+    if (typeof url == "object")
+        wmpc.Get(url.url, callback)
+    return wmpc.Request('GET', url, undefined, undefined, callback);
 }
 
-wmpc.Post = function(url, data, callback) {
-    return wmpc.Request('POST', url, data, callback);
+wmpc.Post = function(url, data, headers, callback) {
+    if (typeof url == "object")
+        return wmpc.Post(url.url, url.data, url.headers, data)
+    return wmpc.Request('POST', url, data, headers, callback);
 }
 
+wmpc.mkCGIParamStr = function(params) {
+    s = ''
+    for (k in params) {
+        s = s + '&' + k + '=' + encodeURIComponent(params[k])
+    }
+    return s.substring(1)
+}
+
+wmpc.CGIGet = function(url, params, callback) {
+    url = url + '?' + wmpc.mkCGIParamStr(params)
+    return wmpc.Get(url, callback);
+}
+
+wmpc.CGIPost = function(url, params, callback) {
+    params['csrfmiddlewaretoken'] = window.dummy.csrfmiddlewaretoken.value
+    data = wmpc.mkCGIParamStr(params)
+//  console.log('CGIPost: data=' + data)
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    return wmpc.Post({url: url, data: data, headers: headers}, callback);
+}
 
 wmpc.mkNoOutFunc = function(name) {
     var res = function(url, callback) {
-        wmpc.Get('ajax/mpc?cmd=' + name, function(status) {
+        wmpc.CGIGet('ajax/mpc/', {'cmd': name}, function(status) {
             console.log('mpc NoOut output: ' + status)
         });
     }
@@ -78,7 +104,7 @@ wmpc.mkNoOutFunc = function(name) {
 
 wmpc.mkLogOutFunc = function(name, gDone) {
     var res = function(url, lDone) {
-        wmpc.Get('ajax/mpc?cmd='+name, function(status) {
+        wmpc.CGIGet('ajax/mpc/', {'cmd': name}, function(status) {
             var target = document.getElementById('wmpc-div-log')
             target.insertBefore(xlp.mkpre(status), target.firstElementChild)
             if (typeof gDone == "function")
@@ -106,17 +132,17 @@ wmpc.clearIntervals = function () {
     wmpc.intervals = {}
 }
 wmpc.addInterval = function(name, intervalHandle) {
-    console.log('adding inter: ' + name)
+//    console.log('adding inter: ' + name)
     if (wmpc.intervals[name] != undefined) {
         wmpc.clearInterval(name)
     }
-    console.log('add inter: ' + name)
+//    console.log('add inter: ' + name)
     wmpc.intervals[name] = intervalHandle
 }
 
 wmpc.updateStatus = function (targetTxt, targetFancy, xproc) {
     wmpc.Get('ajax/mpc?cmd=status', function(status) {
-        xlp.attach(document.getElementById(targetTxt), xlp.mkpre(status))
+//        xlp.attach(document.getElementById(targetTxt), xlp.mkpre(status))
         if (targetFancy != undefined) {
             xproc.transform(status, function(result) {
                 xlp.attach(document.getElementById(targetFancy), result)
@@ -135,8 +161,8 @@ wmpc.setupStatusTxt = function (targetTxt, targetFancy, xproc) {
 }
 
 wmpc.updatePlaylist = function (targetTxt, targetFancy, xproc) {
-    wmpc.Get('ajax/mpc?cmd=playlist', function(status) {
-        xlp.attach(document.getElementById(targetTxt), xlp.mkpre(status))
+    wmpc.CGIGet('ajax/mpc/', {'cmd': 'playlist'}, function(status) {
+//        xlp.attach(document.getElementById(targetTxt), xlp.mkpre(status))
         if (targetFancy != undefined) {
             xproc.transform(status, function(result) {
                 xlp.attach(document.getElementById(targetFancy), result)
@@ -160,7 +186,7 @@ wmpc.play = function(index) {
     if (index != undefined) {
         cmd = cmd + ' ' + index;
     }
-    wmpc.Get('ajax/mpc?cmd=' + cmd, function(status) {})
+    wmpc.CGIGet('ajax/mpc/', {'cmd': cmd}, function(status) {})
 }
 wmpc.pause = wmpc.mkLogOutFunc('pause', wmpc.updateStatusTxtCB)
 wmpc.next = wmpc.mkLogOutFunc('next', wmpc.updateStatusTxtCB)
@@ -184,10 +210,9 @@ wmpc.update = wmpc.mkNoOutFunc('update')
 
 wmpc.seek_click = function(el, ev) {
     cmd = 'seek'
-    console.dir(el)
-    console.dir(ev)
     posdef = Math.round(10000 * (ev.layerX -  el.offsetLeft - 1) / el.clientWidth) / 100.0
-    wmpc.Get('ajax/mpc?cmd=seek+' + posdef + '%', function(status) {})
+//    console.log('posdef: ' + posdef + '%')
+    wmpc.CGIPost('ajax/mpc/', {'cmd': 'seek ' + posdef + '%'}, function(status) {})
 }
 
 wmpc.evh = function(el, ev, func, args) {
@@ -270,9 +295,9 @@ function WMPCMain(x, ev) {
     }
 
     wmpc.Get('ajax/', function(status) {
-        console.log('status XML: ' + status)
+//        console.log('status XML: ' + status)
         mainproc.transformTxt(status, function(htmlfrag) {
-            console.log('result HTML: ' + htmlfrag)
+//            console.log('result HTML: ' + htmlfrag)
             mainproc.attach(document.getElementById('wmpc-body'), htmlfrag)
 
             setTimeout(function () {

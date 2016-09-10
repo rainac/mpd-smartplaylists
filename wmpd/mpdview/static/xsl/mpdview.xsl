@@ -71,7 +71,7 @@ Copyright © 2014 Johannes Willkomm
   </xsl:template>
 
   <xsl:template match="fancy-status">
-    <div id="wmpc-div-status-fancy">
+    <div id="wmpc-div-status-fancy" class="wmpc-div-status-fancy">
       <xsl:apply-templates/>
     </div>
   </xsl:template>
@@ -216,7 +216,7 @@ Copyright © 2014 Johannes Willkomm
   <xsl:template match="text()" mode="playlist-xml"/>
 
   <xsl:template match="cx:op[@type = 'NEWLINE']/cx:*[1]" mode="playlist-xml">
-    <p:item><xsl:value-of select="normalize-space(.)"/></p:item>
+    <p:item><xsl:apply-templates mode="get-text"/></p:item>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
@@ -230,10 +230,14 @@ Copyright © 2014 Johannes Willkomm
   <xsl:template match="p:item">
     <li>
       <span onclick="wmpc.evh(this, event, wmpc.play, {position()});">
-        <xsl:apply-templates/>
+        <xsl:value-of select="."/>
       </span>
     </li>
   </xsl:template>
 
+  <xsl:template match="text()" mode="get-text"/>
+  <xsl:template match="ca:text" mode="get-text">
+    <xsl:value-of select="."/>
+  </xsl:template>
 
 </xsl:stylesheet>

@@ -6,7 +6,12 @@
     <script src="/static/js/mpdview.js" type="text/javascript"> </script>
     <link rel="stylesheet" type="text/css" href="/static/css/mpdview.css"> </link>
   </head>
-  <body onload="WMPCMain(this, event)" id="wmpc-body">
-    <h1>MPDView</h1>
+  <body onload="WMPCMain(this, event)">
+    <form name="dummy" action="/" method="POST">
+      {% csrf_token %}
+    </form>
+    <div id="wmpc-body">
+      <h1>MPDView</h1>
+    </div>
   </body>
 </html>

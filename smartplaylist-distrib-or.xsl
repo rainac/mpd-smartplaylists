@@ -22,10 +22,7 @@
   </xsl:template>
 
   <xsl:template match="paren">
-    <paren>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </paren>
+    <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="or">
@@ -42,72 +39,47 @@
     </and>
   </xsl:template>
 
-  <xsl:template match="and" mode="in-or">
-    <and>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="in-and"/>
-    </and>
-  </xsl:template>
 
-  <xsl:template match="and[paren/or]">
-    <or>
-      <xsl:apply-templates select="." mode="in-or"/>
-    </or>
-  </xsl:template>
-
-  <xsl:template match="*" mode="in-or">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="in-or"/>
-    </xsl:copy>
-  </xsl:template>
-
-  <xsl:template match="and[paren/or]" mode="in-or">
-    <xsl:variable name="this" select="."/>
-    <xsl:for-each select="(paren/or)[1]/*">
-      <xsl:variable name="mypos" select="count(../../preceding-sibling::*)+1"/>
-      <and mode="auto">
-        <xsl:copy-of select="$this/@*"/>
-        <xsl:copy-of select="@*"/>
-        <xsl:apply-templates select="../../../*[position() &lt; $mypos]" mode="in-and"/>
-        <xsl:apply-templates select="." mode="in-and"/>
-        <xsl:apply-templates select="../../../*[position() &gt; $mypos]" mode="in-and"/>
-      </and>
-    </xsl:for-each>
-  </xsl:template>
-
-  <xsl:template match="and[paren/and]" mode="in-or">
-    <xsl:apply-templates/>
-  </xsl:template>
-
-  <xsl:template match="paren/paren" mode="in-or">
-    <xsl:apply-templates mode="in-or"/>
+  <xsl:template match="*" mode="in-and">
+    <xsl:apply-templates select="."/>
   </xsl:template>
 
   <xsl:template match="and" mode="in-and">
     <xsl:apply-templates mode="in-and"/>
   </xsl:template>
 
-  <xsl:template match="paren[paren]" mode="in-and">
+  <xsl:template match="paren" mode="in-and">
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="and/paren[and]" mode="in-and">
-    <xsl:apply-templates/>
+
+
+  <xsl:template match="*" mode="in-or">
+    <xsl:apply-templates select="."/>
   </xsl:template>
 
-  <xsl:template match="paren" mode="in-or">
+  <xsl:template match="or" mode="in-or">
     <xsl:apply-templates mode="in-or"/>
   </xsl:template>
 
-  <xsl:template match="paren" mode="in-and">
-    <paren>
-      <xsl:apply-templates/>
-    </paren>
+  <xsl:template match="paren" mode="in-or">
+    <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="*" mode="in-and">
-    <xsl:apply-templates select="."/>
+
+  <xsl:template match="and[or]">
+    <xsl:variable name="this" select="."/>
+    <xsl:variable name="mypos" select="count(or[1]/preceding-sibling::*)+1"/>
+    <or>
+      <xsl:for-each select="or[1]/*">
+        <and>
+          <xsl:copy-of select="$this/@*"/>
+          <xsl:apply-templates select="$this/*[position() &lt; $mypos]" mode="in-and"/>
+          <xsl:apply-templates select="." mode="in-and"/>
+          <xsl:apply-templates select="$this/*[position() &gt; $mypos]" mode="in-and"/>
+        </and>
+      </xsl:for-each>
+    </or>
   </xsl:template>
 
 </xsl:stylesheet>

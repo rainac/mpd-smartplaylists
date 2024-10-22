@@ -1,0 +1,14 @@
+Source: mpd-smartplaylists
+Section: devel
+Priority: optional
+Maintainer: Johannes Willkomm <johannes.willkomm@googlemail.com>
+Build-Depends: debhelper (>= 7.0.50~), coreutils, help2man, xsltproc, bash, zsh, p2x
+Standards-Version: 3.9.1
+Homepage: http://github.com/rainac/mpd-smartplaylists/
+
+Package: mpd-smartplaylists
+Architecture: all
+Depends: ${misc:Depends}, coreutils, xsltproc, bash, zsh, p2x, mpc
+Description: Generate mpd playlists from database using compound
+ expressions like `mpd-smartplaylists album=extraterrestre or album=animo`
+

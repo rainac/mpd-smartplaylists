@@ -127,6 +127,8 @@ export SMPL_HOME SMPL_LIB SMPL_XSL SMPL_SCRIPTS
 
 export DST
 
+unset MAKEFLAGS
+
 TMP=${TMP:-/tmp}
 
 tmpdir=$TMP/smpl-$$

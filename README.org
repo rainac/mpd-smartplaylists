@@ -303,21 +303,4 @@ A few things to note:
     updated automatically when you load them. You could run the
     command from your crontab, of course
 
-  - as I said before, the XML structure the XSLT were designed
-    /together/, I hope you can got a little feeling for how the
-    particular document structure enabled the simple XSLT
-    implementation
-
-  - in XSLT the code '~<xsl:text>&#xa;</xsl:text>~' generates a
-    newline (you can also use '~<xsl:text>&#x10;</xsl:text>~'). I
-    prefer this form because it is robust against auto indenting
-
-  - the element *or* is optional and just facilitates human reading
-
-  - generally I think it is very important that you understand how
-    XSLT interprets whitespace
-
-The last two points deserve more words, but for now, I'd say, just
-play around with it and see what happens if you change something.
-
 Happy code generating!

@@ -1,6 +1,9 @@
 #! /bin/bash
 
-SMPL_HOME=${SMPL_HOME:-$(dirname $BASH_SOURCE)/..}
+export SMPL_HOME=$(readlink -f $(dirname $BASH_SOURCE)/..)
+export SMPL_LIB=${SMPL_HOME}
+export SMPL_XSL=${SMPL_HOME}
+export SMPL_SCRIPTS=${SMPL_HOME}
 
 . ${SMPL_HOME}/tests/funcs.sh
 

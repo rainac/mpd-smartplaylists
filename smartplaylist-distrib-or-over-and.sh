@@ -3,8 +3,8 @@
 res=0
 cat - > in.xml
 
-while ! xsltproc $SMPL_HOME/smartplaylist-has-paren.xsl in.xml >& /dev/null; do
-    xsltproc -o in-tmp.xml $SMPL_HOME/smartplaylist-distrib-or.xsl in.xml 2> err.txt
+while ! xsltproc $SMPL_XSL/smartplaylist-has-paren.xsl in.xml >& /dev/null; do
+    xsltproc -o in-tmp.xml $SMPL_XSL/smartplaylist-distrib-or.xsl in.xml 2> err.txt
     res=$?
     grep -v "compiled against" err.txt >&2
     if [[ "$res" != "0" ]]; then

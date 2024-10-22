@@ -1,94 +1,80 @@
-# Note: this Makefile is usually copied to the work directory by
-# smartplaylist.sh, together with one copy of the input data each in
-# file tmp.data and tmp.$intype, where intype is the automatically
-# detected input type by sniff-input-type.
-#
-# Make will be called to produce the file tmp.$mode, where mode is the
-# string given to the -m or --mode option of smartplaylist.sh.
+# This file is part of Named Constant Generator.
+# Copyright © 2009,2010,2011,2012 Johannes Willkomm 
+# See the file gennc for copying conditions.
 
-# suffixes:
-#
-#  spxml - XML format
-#  spdxml - XML format, parentheses expanded
-#  sp    - Text format (pretty printed input)
-#  spsh  - Bash (mpc command line) format
-#  spfl  - File list as returned by MPD searches
-#  spfls  - File list as returned by MPD searches, separated by a special mark
-#  spfl0  - File list as returned by MPD searches, 0 separated
-#  exec - Run command on MPD for each file found
-#  rsync-handy - Testing
-#  rsync-XXX - Testing
-#  scp-handy - Testing
-#  scp-XXX - Testing
-#  scp-handy-sh - Testing
-#  scp-XXX-sh - Testing
+PROJ_NAME = mpd-smartplaylists
 
-# useful commands:
-#  - transfer playlist to device
-#  - transfer file list to device
+INSTALL ?= install
+DESTDIR ?= 
 
-debug_flag ?=
+prefix        ?= /usr/local
+instprefix     = $(DESTDIR)$(prefix)
+exec_prefix   ?= $(instprefix)
+bindir        ?= $(exec_prefix)/bin
+datarootdir   ?= $(instprefix)/share
+includedir    ?= $(instprefix)/include
+libdir        ?= $(exec_prefix)/lib
+docdir        ?= $(datarootdir)/doc/$(PROJ_NAME)
+mandir        ?= $(datarootdir)/man
+man1dir       ?= $(mandir)/man1
+man3dir       ?= $(mandir)/man3
+datadir       ?= $(datarootdir)/$(PROJ_NAME)
+projlibdir    ?= $(libdir)/$(PROJ_NAME)
+shdir         ?= $(projlibdir)/scripts
+xsldir        ?= $(projlibdir)/xsl
+srcdir        ?= .
 
-device ?= "mobile:"  # scp host
+XSLS = $(addprefix $(srcdir)/, copy.xsl \
+	create-smartplaylist.xsl \
+	create-smartplaylist2.xsl \
+	genupdate-sh.xsl \
+	smartplaylist-distrib-or.xsl \
+	smartplaylist-has-paren.xsl \
+)
+SHS = $(addprefix $(srcdir)/,\
+copy-mpd-to-handy.sh\
+copy-mpd-to-host.sh\
+copy-rsync-from-mpd.sh\
+copy-rsync-mpd-to-host.sh\
+copy-tarred-mpd-to-host.sh\
+mpd-command.sh\
+mpd-shell-in-dir.sh\
+smartplaylist-create.sh\
+smartplaylist-distrib-or-over-and.sh\
+smartplaylist-query.sh\
+smartplaylist-txt2xml.sh\
+sniff-input-type.sh\
+update-mpd-smartplaylists.sh\
+)
 
-format ?=
+examples =
 
-flags ?=
+default all: mpd-smartplaylists.1 $(examples)
 
-%.spp2x: %.sp
-	p2x --output-mode y -p $(SMPL_HOME)/p2x.conf $< | tr '[:upper:]' '[:lower:]' | tee $@ > /dev/null
+mpd-smartplaylists: smartplaylist.sh
+	cp -a $< $@
 
-%.spxml1: %.spp2x
-	xsltproc $(SMPL_HOME)/create-smartplaylist.xsl $< 2> err.txt | tee $@ > /dev/null
-#	-grep -v "compiled against" err.txt 1>&2
+mpd-smartplaylists.1: mpd-smartplaylists man-texts.txt
+	LANG=C PATH=.:$$PATH help2man -Len_US.utf8 -N --include man-texts.txt ./mpd-smartplaylists > $@
 
-%.spxml2: %.spxml1
-	xsltproc $(SMPL_HOME)/create-smartplaylist2.xsl $< 2> err.txt | tee $@ > /dev/null
-#	-grep -v "compiled against" err.txt 1>&2
+install: mpd-smartplaylists mpd-smartplaylists.1 $(examples)
+	$(INSTALL) -d $(bindir) $(xsldir) $(shdir) $(man1dir) $(docdir)
+	$(INSTALL) $(srcdir)/mpd-smartplaylists $(bindir)
+	$(INSTALL) p2x.conf Makefile.mpdsp $(projlibdir)
+	$(INSTALL) -m 644 $(XSLS) $(xsldir)
+	$(INSTALL) -m 755 $(SHS) $(shdir)
+	$(INSTALL) -m 644  $(srcdir)/mpd-smartplaylists.1 $(man1dir)
+	$(INSTALL) -m 644 README.txt $(docdir)
 
-%.spxml: %.spxml2
-	cp $< $@
+clean:
+	$(RM) mpd-smartplaylists.1 $(examples)
 
-#%.spxml: %.sp
-#	cat $< | smartplaylist-txt2xml.sh > $@
-
-%.spdxml: %.spxml
-	cat $< | smartplaylist-distrib-or-over-and.sh > $@
-
-%.spsh: %.spdxml
-	cat $< | xsltproc --stringparam format "$(format)" $(SMPL_HOME)/genupdate-sh.xsl - > $@ 2> err.txt
-
-%.run %.spfl: %.spsh
-	cat $< | bash > $@
-
-%.spfl0: %.spfl
-	awk '{ ORS=""; print $0; print "\000"; }' $< > $@
-
-%.scp %.scp-device: %.spfl
-	cat $< | DST=$(device) copy-mpd-to-host.sh $(debug_flag) -W $(flags) | bash
-# do not produce the target so this can be run repeatedly as a command mode
-
-%.tar %.tar-device: %.spfl
-	cat $< | copy-tarred-mpd-to-host.sh $(debug_flag) -W $(flags) -d $(device) -z
-# do not produce the target so this can be run repeatedly as a command mode
-
-%.rsync %.rsync-pull %.rsync-device: %.spfl
-	cat $< | copy-rsync-from-mpd.sh $(debug_flag) -W $(flags) -d $(device)
-# do not produce the target so this can be run repeatedly as a command mode
-
-#%.rsync-push %.rsync-device: %.spfl
-#	cat $< | copy-rsync-mpd-to-host.sh -d $(device) $(debug_flag)
-# do not produce the target so this can be run repeatedly as a command mode
-
-%.exec: %.spfl0
-	cat $< | mpd-command.sh $(debug_flag) -W $(flags) -c $(command)
-# do not produce the target so this can be run repeatedly as a command mode
-
-# targets for (local) development
-check: test1 test2
+test check: test1 test2
 
 test1:
 	./tests/test_parser.sh
 
 test2:
 	./tests/test_parser2.sh
+
+.PHONY: test check

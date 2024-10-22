@@ -1,10 +1,14 @@
 #! /bin/bash
 
-SMPL_HOME=${SMPL_HOME:-$(dirname $BASH_SOURCE)/..}
+export SMPL_HOME=$(readlink -f $(dirname $BASH_SOURCE)/..)
+export SMPL_LIB=${SMPL_HOME}
+export SMPL_XSL=${SMPL_HOME}
+export SMPL_SCRIPTS=${SMPL_HOME}
 
 . ${SMPL_HOME}/tests/funcs.sh
 
 test_simple_query() {
+    echo $SMPL_HOME/smartplaylist.sh -m spsh album=abc
     cmd=$($SMPL_HOME/smartplaylist.sh -m spsh album=abc | tee tmp.sh)
     echo "mpc search album abc" > cmp.sh
     cmpMultiLineShellScript tmp.sh cmp.sh

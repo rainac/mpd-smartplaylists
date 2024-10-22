@@ -1,0 +1,12 @@
+[AUTHOR]
+Written by Johannes Willkomm <johannes@johannes-willkomm.de>
+
+[COPYRIGHT]
+This file is part of mpd-smartplaylists.
+Copyright (C) 2015-2024 Johannes Willkomm.
+See the file smartplaylists.sh  for copying conditions.
+
+/NO SECTION/
+# Local Variables:
+# coding: utf-8
+# End:

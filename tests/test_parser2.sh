@@ -129,6 +129,36 @@ test_filter_prec_and_or_poss() {
     syntaxCheck tmp.sh
 }
 
+test_filter_and_filtered() {
+    $SMPL_HOME/smartplaylist.sh -m spsh "abc and album=test < filt" > tmp.sh
+    res=$?
+    assertEquals "This expression pass OK" "0" "$res"
+    echo -e "mpc search artist abc album test |grep -i \"filt\"" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
+    cat tmp.sh
+    syntaxCheck tmp.sh
+}
+
+test_filter_and_in_paren_filtered() {
+    $SMPL_HOME/smartplaylist.sh -m spsh "(abc and album=test) < filt" > tmp.sh
+    res=$?
+    assertEquals "This expression pass OK" "0" "$res"
+    echo -e "mpc search artist abc album test |grep -i \"filt\"" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
+    cat tmp.sh
+    syntaxCheck tmp.sh
+}
+
+test_filter_and_one_op_in_paren_filtered() {
+    $SMPL_HOME/smartplaylist.sh -m spsh "abc and (album=test) < filt" > tmp.sh
+    res=$?
+    assertEquals "This expression pass OK" "0" "$res"
+    echo -e "mpc search artist abc album test |grep -i \"filt\"" > cmp.sh
+    cmpMultiLineShellScript tmp.sh cmp.sh
+    cat tmp.sh
+    syntaxCheck tmp.sh
+}
+
 test_cleanup() {
     rm -f tmp.sh cmp.sh error.txt
 }

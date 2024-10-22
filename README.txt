@@ -69,9 +69,8 @@ Table of Contents
   │ ./smartplaylist.sh -m tar -d ~/mymusic  artist = stones            # download from MPD to local directory
   │ ./smartplaylist.sh -m tar -d mobile:SDCard/Music artist = stones   # transfer from MPD to remote host
   └────
-  To transfer stuff to a smartphone you should install the `SSHelper'
-  app, which provides the required tools like `ssh', `tar', `rsync',
-  etc.
+  To transfer stuff to a smartphone you should install the `Termux' app,
+  which provides the required tools like `ssh', `tar', `rsync', etc.
 
 
 2 A custom text based language (representation) for Smartplaylists

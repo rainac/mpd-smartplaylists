@@ -39,10 +39,12 @@ flags ?=
 	p2x --output-mode y -p $(SMPL_HOME)/p2x.conf $< | tr '[:upper:]' '[:lower:]' | tee $@ > /dev/null
 
 %.spxml1: %.spp2x
-	xsltproc $(SMPL_HOME)/create-smartplaylist.xsl $< | tee $@ > /dev/null
+	xsltproc $(SMPL_HOME)/create-smartplaylist.xsl $< 2> err.txt | tee $@ > /dev/null
+#	-grep -v "compiled against" err.txt 1>&2
 
 %.spxml2: %.spxml1
-	xsltproc $(SMPL_HOME)/create-smartplaylist2.xsl $< | tee $@ > /dev/null
+	xsltproc $(SMPL_HOME)/create-smartplaylist2.xsl $< 2> err.txt | tee $@ > /dev/null
+#	-grep -v "compiled against" err.txt 1>&2
 
 %.spxml: %.spxml2
 	cp $< $@
@@ -54,7 +56,7 @@ flags ?=
 	cat $< | smartplaylist-distrib-or-over-and.sh > $@
 
 %.spsh: %.spdxml
-	cat $< | xsltproc --stringparam format "$(format)" $(SMPL_HOME)/genupdate-sh.xsl - > $@
+	cat $< | xsltproc --stringparam format "$(format)" $(SMPL_HOME)/genupdate-sh.xsl - > $@ 2> err.txt
 
 %.run %.spfl: %.spsh
 	cat $< | bash > $@
